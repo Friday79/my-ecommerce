@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 
-# Create your views here.
+
+def home(request):
+    Data = {
+        'message': 'Welcome to the E-commerce Store'
+    }
+    return JsonResponse(Data)

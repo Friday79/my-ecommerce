@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -79,12 +80,12 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 #DATABASES = {
 #    "default": {
-#        "ENGINE": "django.db.backends.postgresql",
-#        "NAME": "ecommerce_db",
-#        "USER": "ecommerce_user",
-#        "PASSWORD": "ecommerce_password",
-#        "HOST": "localhost",
-#        "PORT": "5433",
+#        'ENGINE': "django.db.backends.postgresql",
+#        'NAME': os.getenv('DB_NAME'),
+#        'USER': os.getenv('DB_USER'),
+#        'PASSWORD': os.getenv('DB_PASSWORD'),
+#        'HOST': os.getenv('DB_HOST'),
+#        'PORT': os.getenv('DB_PORT'),
 #    }
 #}
 
@@ -145,3 +146,7 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+CORS_ALLOW_ALL_ORIGINS = [
+    "https://localhost:5433",
+]
