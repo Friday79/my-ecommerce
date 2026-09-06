@@ -1,0 +1,22 @@
+ # Python
+venv/
+**/venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django
+*.log
+db.sqlite3
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment variables
+.env
+frontend/.env
+
+# Editor files
+*.swp
+*.swo

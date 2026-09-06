@@ -28,7 +28,11 @@ SECRET_KEY = "django-insecure-mdr7v0n%j-%wrsp^$oqw9e^l6j(54-*m%ed)9j4mx-*70uut$-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "jubilant-space-guacamole-pjg9r6gjpxwjf756w-8000.app.github.dev",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
@@ -41,8 +45,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
+
     'store',
+    'products',
+    
 ]
+
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -137,6 +147,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
@@ -147,6 +160,6 @@ MAILERS = {
     },
 }
 
-CORS_ALLOW_ALL_ORIGINS = [
-    "https://localhost:5433",
+CORS_ALLOWED_ORIGINS = [
+    "https://jubilant-space-guacamole-pjg9r6gjpxwjf756w-5173.app.github.dev",
 ]
