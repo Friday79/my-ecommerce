@@ -28,7 +28,10 @@ const fetchChat = async () => {
         fetchChat();
     }, []);
 
-    const addToCart = (product) => {
+}
+
+    const addToCart = async (product) => {
+        try{
         const existingItem = cartItems.find((item) => item.id === product.id);
         if (existingItem) {
             setCartItems(
@@ -41,13 +44,41 @@ const fetchChat = async () => {
         } else {
             setCartItems([...cartItems, { ...product, quantity: 1 }]);
         }
-    };
+        const response = await fetch(`${BASEURL}/api/cart/add/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ product_id: product.id }),
+        });
+        fetchCart();
+        if (!response.ok) {
+            throw new Error('Failed to add item to cart');
+        }
+        const data = await response.json();
+        setTotal(data.total || 0);
+    
+    }
+};
 
-    const removeFromCart = (id) => {
+    const removeFromCart = async (itemId) => {
+        try {
         setCartItems(cartItems.filter((item) => item.id !== id));
+        const response = await fetch(`${BASEURL}/api/cart/remove/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ item_id: itemId }),
+        });
+        fetchCart();
+        } catch (error) {
+            console.error('Error removing item from cart:', error);
+        }
     }
 
-    const updateQuantity = (id, quantity) => {
+    const updateQuantity = async (itemId, quantity) => {
+        try {
         const newQuantity = Number(quantity);
         if (newQuantity < 1) {
             removeFromCart(id) 
@@ -58,6 +89,16 @@ const fetchChat = async () => {
                 item.id === id ? { ...item, quantity: newQuantity } : item
             )
         );
+        const response = await fetch(`${BASEURL}/api/cart/update/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ item_id: itemId, quantity: newQuantity }),
+        });
+        fetchCart();
+    } catch (error) {
+        console.error('Error updating item quantity:', error);
     };
 
     return (
