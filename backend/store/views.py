@@ -25,22 +25,72 @@ def get_categories(request):
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 def get_cart(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    if not request.session.session_key:
+        request.session.create()
+
+    cart, created = Cart.objects.get_or_create(
+        session_key=request.session.session_key,
+        user=None
+    )
+
     serializer = CartSerializer(cart)
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 def add_to_cart(request):
     product_id = request.data.get('product_id')
-    product = Product.objects.get(id=product_id)
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+    if not product_id:
+        return Response(
+            {'error': 'Product ID is required'},
+            status=400
+        )
+
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Response(
+            {'error': 'Product not found'},
+            status=404
+        )
+
+    if request.user.is_authenticated:
+        cart = Cart.objects.filter(user=request.user).first()
+
+        if cart is None:
+            cart = Cart.objects.create(user=request.user)
+    else:
+        if not request.session.session_key:
+            request.session.create()
+
+        cart = Cart.objects.filter(
+            session_key=request.session.session_key,
+            user__isnull=True
+        ).order_by('id').first()
+
+        if cart is None:
+            cart = Cart.objects.create(
+                session_key=request.session.session_key,
+                user=None
+            )
+
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product
+    )
+
     if not created:
         item.quantity += 1
         item.save()
-    return Response({'message': 'Product added to cart',"cart":CartSerializer(cart).data})
+
+    return Response({
+        'message': 'Product added successfully',
+        'cart': CartSerializer(cart).data
+    })
 
 @api_view(['POST'])
 def update_cart_quantity(request):
